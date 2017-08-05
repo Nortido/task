@@ -5,25 +5,42 @@
 namespace Task\App\Core;
 
 use PDO;
-use PDOException;
 
 class DB
 {
+    /**
+     * @var PDO
+     */
     private $connection;
 
+    /**
+     * DB constructor.
+     */
     public function __construct() {
-        $this->connection = new PDO('mysql:host=mysql;dbname=taksdb', 'root', 'JV4yLWsPlzQkCvMz3E5j');
+        $this->connection = new PDO(
+            'mysql:host=mysql;dbname=taskdb',
+            'root',
+            'JV4yLWsPlzQkCvMz3E5j'
+        );
     }
 
-    public function get($id, $table)
+    /**
+     * @param int $id
+     * @param string $table
+     * @return mixed
+     */
+    public function get(int $id,string $table)
     {
-        return $this->connection
-            ->query("SELECT * FROM ".$table." WHERE id = ".$id)
-            ->fetchObject()
-        ;
+        return $this->findByField('id', $id, $table);
     }
 
-    public function findByField($field, $value, $table)
+    /**
+     * @param string $field
+     * @param string|int $value
+     * @param string $table
+     * @return mixed
+     */
+    public function findByField(string $field, $value,string $table)
     {
         return $this->connection
             ->query("SELECT * FROM ".$table." WHERE ".$field." = '".$value."'")
@@ -31,6 +48,9 @@ class DB
         ;
     }
 
+    /**
+     * @return PDO
+     */
     public function getConnection()
     {
         return $this->connection;

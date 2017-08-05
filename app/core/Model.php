@@ -8,14 +8,28 @@ use Task\TaskBase;
 
 class Model
 {
+    /**
+     * @var TaskBase
+     */
     public $app;
+    /**
+     * @var string
+     */
     public $table;
 
+    /**
+     * Model constructor.
+     * @param TaskBase $app
+     */
     public function __construct(TaskBase $app) {
         $this->app = $app;
     }
 
-    public function get($id) {
-        return $this->app->db->get($id, $this->table);
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function get(int $id) {
+        return $this->app->getDb()->get($id, $this->table);
     }
 }

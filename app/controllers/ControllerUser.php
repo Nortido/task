@@ -7,19 +7,35 @@ use Task\TaskBase;
 
 class ControllerUser extends Controller
 {
-    private static $error;
-
+    /**
+     * ControllerUser constructor.
+     * @param TaskBase $app
+     */
     public function __construct(TaskBase $app) {
         $this->model = new ModelUser($app);
 
         parent::__construct($app);
     }
 
+    /**
+     * @param int $id
+     */
     function actionView($id)
     {
         $data = $this->model->get($id);
 
+        if (!$data) {
+            echo "<p>User doesn't exist</p>";
+            exit;
+        }
+
         session_start();
+
+        if (!$this->_checkAuth($data)) {
+            echo "<p>Access denied</p><br>";
+            exit;
+        }
+
         $data->errors = $_SESSION['errors'];
         $_SESSION['errors'] = null;
 
@@ -54,7 +70,7 @@ class ControllerUser extends Controller
         }
         else
         {
-            if ($_SESSION['user_id'] && $_SESSION["login_status"] == "access_granted") {
+            if ($_SESSION['hash'] && $_SESSION["login_status"] == "access_granted") {
                 header('Location:/user/view/'.$_SESSION['user_id']);
             }
         }
@@ -74,12 +90,20 @@ class ControllerUser extends Controller
         header("Location: /");
     }
 
-    function actionCheckout($id)
+    /**
+     * @param int $id
+     */
+    function actionCheckout(int $id)
     {
         $errors = [];
 
         $user = $this->model->get($id);
+
+        if (!$this->_checkAuth($user)) {
+            header('Location:/');
+        }
         $amount = $_POST['amount'];
+
         if ($amount > $user->balance) {
             $errors[] = "Amount is greater then your balance";
         }
@@ -95,5 +119,19 @@ class ControllerUser extends Controller
             $_SESSION['errors'] = $errors;
         }
         header('Location:/user/view/'.$id);
+    }
+
+    /**
+     * @param ModelUser $user
+     * @return bool $isAuth
+     */
+    private function _checkAuth($user)
+    {
+        session_start();
+        $isAuth = $_SESSION['user_id'] === $user->id
+            && $_SESSION['hash'] === $user->password_hash
+            && $_SESSION['login_status'] === 'access_granted';
+
+        return $isAuth;
     }
 }

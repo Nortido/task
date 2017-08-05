@@ -11,9 +11,46 @@ class TaskBase
     /**
      * @var DB
      */
-    public $db;
+    private $db;
+
     /**
      * @var array
      */
-    public $config;
+    private $config;
+
+    /**
+     * @return DB
+     */
+    public function getDb() : DB
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DB $db
+     * @return TaskBase
+     */
+    public function setDb(DB $db) : TaskBase
+    {
+        $this->db = $db;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig() : array
+    {
+        return $this->config;
+    }
+
+    /**
+     * @param array $config
+     * @return TaskBase
+     */
+    public function setConfig(array $config) : TaskBase
+    {
+        $this->config = $config;
+        return $this;
+    }
 }
