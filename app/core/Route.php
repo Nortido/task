@@ -55,7 +55,7 @@ class Route
         $model_path = "app/models/".$model_file;
         if(file_exists($model_path))
         {
-            require_once "app/models/".$model_file;
+            include_once "app/models/".$model_file;
         }
 
         // подцепляем файл с классом контроллера
@@ -63,7 +63,7 @@ class Route
         $controller_path = "app/controllers/".$controller_file;
         if(file_exists($controller_path))
         {
-            require_once "app/controllers/".$controller_file;
+            include_once "app/controllers/".$controller_file;
         }
         else
         {
