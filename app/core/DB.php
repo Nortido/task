@@ -25,8 +25,8 @@ class DB
     public function findByField($field, $value, $table)
     {
         return $this->connection
-            ->query("SELECT * FROM ".$table." WHERE ".$field." = ".$value)
-            ->fetch()
+            ->query("SELECT * FROM ".$table." WHERE ".$field." = '".$value."' LIMIT 1")
+            ->fetchObject()
         ;
     }
 }

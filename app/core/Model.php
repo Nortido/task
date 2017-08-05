@@ -4,16 +4,18 @@
  */
 namespace Task\App\Core;
 
+use Task\TaskBase;
+
 class Model
 {
-    public $db;
+    public $app;
     public $table;
 
-    public function __construct(DB $db) {
-        $this->db = $db;
+    public function __construct(TaskBase $app) {
+        $this->app = $app;
     }
 
     public function get($id) {
-        return $this->db->get($id, $this->table);
+        return $this->app->db->get($id, $this->table);
     }
 }

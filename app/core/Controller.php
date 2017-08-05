@@ -4,13 +4,15 @@
  */
 namespace Task\App\Core;
 
+use Task\TaskBase;
+
 class Controller
 {
     public $model;
-    public $db;
+    public $app;
 
-    public function __construct(DB $db) {
-        $this->db = $db;
+    public function __construct(TaskBase $app) {
+        $this->app = $app;
     }
 
     function action_index()

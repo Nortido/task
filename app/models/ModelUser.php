@@ -10,6 +10,6 @@ class ModelUser extends Model
     public $table = 'users';
 
     public function getByLogin($login) {
-        return $this->db->findByField("login", $login, $this->table);
+        return $this->app->db->findByField("login", $login, $this->table);
     }
 }

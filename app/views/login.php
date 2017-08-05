@@ -2,7 +2,7 @@
 <html>
 <body>
 
-<form action="/login" method="post">
+<form action="/user/login" method="post">
     Login:<br>
     <input type="text" name="login" value="">
     <br>

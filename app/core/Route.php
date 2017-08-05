@@ -4,14 +4,17 @@
  */
 namespace Task\App\Core;
 
+use Task\TaskBase;
+
 class Route
 {
-    static function start(DB $db)
+    static function start(TaskBase $app)
     {
         // контроллер и действие по умолчанию
         $controller_name = 'Main';
         $action_name = 'index';
         $action_params = [];
+        $id = '0';
 
         $url = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
         $params = parse_url($_SERVER["REQUEST_URI"], PHP_URL_QUERY);
@@ -68,7 +71,7 @@ class Route
         }
 
         // создаем контроллер
-        $controller = new $controller_name($db);
+        $controller = new $controller_name($app);
         $action = $action_name;
 
         if(method_exists($controller, $action))

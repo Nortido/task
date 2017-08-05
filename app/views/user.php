@@ -10,7 +10,8 @@
     <input type="text" name="amount" value="">
     <br><br>
     <input type="submit" value="Proceed">
-</form
+</form>
+<a href="/user/logout">Logout</a>
 
 </body>
 </html>
