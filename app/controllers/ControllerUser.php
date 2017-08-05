@@ -7,6 +7,8 @@ use Task\TaskBase;
 
 class ControllerUser extends Controller
 {
+    private static $error;
+
     public function __construct(TaskBase $app) {
         $this->model = new ModelUser($app);
 
@@ -16,7 +18,11 @@ class ControllerUser extends Controller
     function actionView($id)
     {
         $data = $this->model->get($id);
+
         session_start();
+        $data->errors = $_SESSION['errors'];
+        $_SESSION['errors'] = null;
+
         if ($data->password_hash == $_SESSION['hash'] && !is_null($data->password_hash)) {
             include("app/views/user.php");
         } else {
@@ -38,7 +44,8 @@ class ControllerUser extends Controller
             {
                 $_SESSION["login_status"] = "access_granted";
                 $_SESSION['hash'] = $user->password_hash;
-                header('Location:/user/view/1');
+                $_SESSION['user_id'] = $user->id;
+                header('Location:/user/view/'.$user->id);
             }
             else
             {
@@ -47,8 +54,8 @@ class ControllerUser extends Controller
         }
         else
         {
-            if (isset($_SESSION['hash'])) {
-                header('Location:/user/view/1');
+            if ($_SESSION['user_id'] && $_SESSION["login_status"] == "access_granted") {
+                header('Location:/user/view/'.$_SESSION['user_id']);
             }
         }
         session_write_close();
@@ -65,5 +72,28 @@ class ControllerUser extends Controller
         setcookie(session_name(),'',0,'/');
 
         header("Location: /");
+    }
+
+    function actionCheckout($id)
+    {
+        $errors = [];
+
+        $user = $this->model->get($id);
+        $amount = $_POST['amount'];
+        if ($amount > $user->balance) {
+            $errors[] = "Amount is greater then your balance";
+        }
+
+        if ($amount <= 0) {
+            $errors[] = "Amount should be greater then zero";
+        }
+
+        if (!count($errors)) {
+            $this->model->checkout($id, $amount);
+        } else {
+            session_start();
+            $_SESSION['errors'] = $errors;
+        }
+        header('Location:/user/view/'.$id);
     }
 }

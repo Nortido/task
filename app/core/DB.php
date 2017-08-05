@@ -5,6 +5,7 @@
 namespace Task\App\Core;
 
 use PDO;
+use PDOException;
 
 class DB
 {
@@ -25,8 +26,13 @@ class DB
     public function findByField($field, $value, $table)
     {
         return $this->connection
-            ->query("SELECT * FROM ".$table." WHERE ".$field." = '".$value."' LIMIT 1")
+            ->query("SELECT * FROM ".$table." WHERE ".$field." = '".$value."'")
             ->fetchObject()
         ;
+    }
+
+    public function getConnection()
+    {
+        return $this->connection;
     }
 }
