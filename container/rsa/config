@@ -1,4 +1,0 @@
-HostName bitbucket.org
-User git
-IdentityFile ~/.ssh/id_rsa
-StrictHostKeyChecking no
