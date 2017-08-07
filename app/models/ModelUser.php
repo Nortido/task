@@ -38,27 +38,53 @@ class ModelUser extends Model
                 ':id' => $id
             ]);
 
-            $balanceObject = $conn->query("
-                SELECT balance FROM users WHERE id = ".$id."
-            ")->fetchObject();
-
-            if ($balanceObject->balance < $amount) {
+            if ($this->_checkUserBalanceGreater($conn, $id, $amount)) {
                 $conn->rollBack();
 
                 return false;
             }
 
-            $stmt = $conn->prepare("
-                UPDATE users SET balance = balance - :amount WHERE id = :id
-            ");
-            $stmt->execute([
-                ':amount' => $amount,
-                ':id' => $id
-            ]);
-            return $conn->commit();
+            return $this->_updateUserBalance($conn, $id, $amount);
         } catch(PDOException $e) {
             $conn->rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * @param PDO $conn
+     * @param $id
+     * @param $amount
+     * @return bool
+     */
+    private function _checkUserBalanceGreater(PDO $conn, $id, $amount) : bool
+    {
+        $balanceObject = $conn->query("
+                SELECT balance FROM users WHERE id = ".$id." AND balance > ".$amount."
+            ")->rowCount();
+
+        return !$balanceObject;
+    }
+
+    /**
+     * @param PDO $conn
+     * @param $id
+     * @param $amount
+     */
+    private function _updateUserBalance($conn, $id, $amount)
+    {
+        $stmt = $conn->prepare("
+                UPDATE users SET balance = balance - :amount WHERE id = :id
+            ");
+        $stmt->execute([
+            ':amount' => $amount,
+            ':id' => $id
+        ]);
+
+        if ($conn->inTransaction()) {
+            return $conn->commit();
+        }
+
+        return true;
     }
 }
