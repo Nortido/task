@@ -11,7 +11,7 @@ class ControllerMain extends Controller
         session_start();
 
         if (isset($_SESSION['hash'])) {
-            header('Location:/user/view/1');
+            header('Location:/user/login');
         }
 
         include("app/views/login.php");
