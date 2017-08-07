@@ -2,15 +2,17 @@
 <html>
 <body>
 
-<p>Username: <?= $data->login ?></p>
-<p>Balance: <?= $data->balance ?></p>
+<p>Username: <?= $user->login ?></p>
+<p>Balance: <?= $user->balance ?></p>
 
-<?php if ($data->errors) : ?>
-    <?php foreach ($data->errors as $error): ?>
-        <i>Error: <?= $error ?></i>
+<?php if ($errors) : ?>
+    <ul>
+    <?php foreach ($errors as $error): ?>
+        <i>Error: <?= $error ?></i><br>
     <?php endforeach; ?>
+    </ul>
 <?php endif; ?>
-<form action="/user/checkout/<?= $data->id ?>" method="post">
+<form action="/user/checkout/<?= $user->id ?>" method="post">
     Amount:<br>
     <input type="number" step="0.01" name="amount" value="" required>
     <br><br>

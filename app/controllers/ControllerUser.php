@@ -22,22 +22,22 @@ class ControllerUser extends Controller
      */
     function actionView($id)
     {
-        $data = $this->model->get($id);
+        $user = $this->model->get($id);
 
-        if (!$data) {
+        if (!$user) {
             echo "<p>User doesn't exist</p>";
             exit;
         }
 
-        if (!$this->_checkAuth($data)) {
+        if (!$this->_checkAuth($user)) {
             echo "<p>Access denied</p><br>";
             exit;
         }
 
-        $data->errors = $this->app->getSession()['error'];
-        unset($this->app->getSession()['errors']);
+        $errors = $this->app->getSession()['errors'];
+        $this->app->setSessionVar('errors', null);
 
-        if ($data->password_hash ==  $this->app->getSession()['hash'] && !is_null($data->password_hash)) {
+        if ($user->password_hash ==  $this->app->getSession()['hash'] && !is_null($user->password_hash)) {
             include("app/views/user.php");
         } else {
             header('Location:/user/login');
@@ -97,23 +97,19 @@ class ControllerUser extends Controller
         if (!$this->_checkAuth($user)) {
             header('Location:/');
         }
-        $amount = $_POST['amount'];
-
-        if ($amount > $user->balance) {
-            $errors[] = "Amount is greater then your balance";
-        }
+        $amount = floatval($_POST['amount']);
 
         if ($amount <= 0) {
             $errors[] = "Amount should be greater then zero";
         }
 
         if (!count($errors)) {
-            if ($this->model->checkout($id, $amount)) {
-                $errors[] = "Operation is canceled";
+            if (!$this->model->checkout($id, $amount)) {
+                $errors[] = "Operation is failed";
             }
-        } else {
-            $this->app->getSession()['errors'] = $errors;
         }
+
+        $this->app->setSessionVar('errors', $errors);
         header('Location:/user/view/'.$id);
     }
 

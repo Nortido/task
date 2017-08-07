@@ -32,17 +32,29 @@ class ModelUser extends Model
         $conn = $this->app->getDb()->getConnection();
         try {
             $conn->beginTransaction();
-            $conn->exec("
+            $conn->prepare("
                 SELECT * FROM users WHERE id = :id FOR UPDATE
-            ");
+            ")->execute([
+                ':id' => $id
+            ]);
+
+            $balanceObject = $conn->query("
+                SELECT balance FROM users WHERE id = ".$id."
+            ")->fetchObject();
+
+            if ($balanceObject->balance < $amount) {
+                $conn->rollBack();
+
+                return false;
+            }
+
             $stmt = $conn->prepare("
-                UPDATE users SET balance = balance - :amount WHERE id = :id AND balance >= :amount
+                UPDATE users SET balance = balance - :amount WHERE id = :id
             ");
             $stmt->execute([
                 ':amount' => $amount,
                 ':id' => $id
             ]);
-
             return $conn->commit();
         } catch(PDOException $e) {
             $conn->rollBack();
