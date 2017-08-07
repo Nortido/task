@@ -29,17 +29,15 @@ class ControllerUser extends Controller
             exit;
         }
 
-        session_start();
-
         if (!$this->_checkAuth($data)) {
             echo "<p>Access denied</p><br>";
             exit;
         }
 
-        $data->errors = $_SESSION['errors'];
-        $_SESSION['errors'] = null;
+        $data->errors = $this->app->getSession()['error'];
+        unset($this->app->getSession()['errors']);
 
-        if ($data->password_hash == $_SESSION['hash'] && !is_null($data->password_hash)) {
+        if ($data->password_hash ==  $this->app->getSession()['hash'] && !is_null($data->password_hash)) {
             include("app/views/user.php");
         } else {
             header('Location:/user/login');
@@ -48,8 +46,6 @@ class ControllerUser extends Controller
 
     function actionLogin()
     {
-        session_start();
-
         if(isset($_POST['login']) && isset($_POST['password']))
         {
             $login = $_POST['login'];
@@ -58,23 +54,22 @@ class ControllerUser extends Controller
             $user = $this->model->getByLogin($login);
             if (password_verify($password, $user->password_hash))
             {
-                $_SESSION["login_status"] = "access_granted";
-                $_SESSION['hash'] = $user->password_hash;
-                $_SESSION['user_id'] = $user->id;
+                $this->app->setSessionVar("login_status","access_granted");
+                $this->app->setSessionVar('hash',$user->password_hash);
+                $this->app->setSessionVar('user_id',$user->id);
                 header('Location:/user/view/'.$user->id);
             }
             else
             {
-                $_SESSION["login_status"] = "access_denied";
+                $this->app->setSessionVar("login_status","access_denied");
             }
         }
         else
         {
-            if ($_SESSION['hash'] && $_SESSION["login_status"] == "access_granted") {
-                header('Location:/user/view/'.$_SESSION['user_id']);
+            if ( $this->app->getSession()['hash'] &&  $this->app->getSession()["login_status"] == "access_granted") {
+                header('Location:/user/view/'. $this->app->getSession()['user_id']);
             }
         }
-        session_write_close();
 
         include("app/views/login.php");
     }
@@ -113,10 +108,11 @@ class ControllerUser extends Controller
         }
 
         if (!count($errors)) {
-            $this->model->checkout($id, $amount);
+            if ($this->model->checkout($id, $amount)) {
+                $errors[] = "Operation is canceled";
+            }
         } else {
-            session_start();
-            $_SESSION['errors'] = $errors;
+            $this->app->getSession()['errors'] = $errors;
         }
         header('Location:/user/view/'.$id);
     }
@@ -127,10 +123,9 @@ class ControllerUser extends Controller
      */
     private function _checkAuth($user)
     {
-        session_start();
-        $isAuth = $_SESSION['user_id'] === $user->id
-            && $_SESSION['hash'] === $user->password_hash
-            && $_SESSION['login_status'] === 'access_granted';
+        $isAuth =  $this->app->getSession()['user_id'] === $user->id
+            &&  $this->app->getSession()['hash'] === $user->password_hash
+            &&  $this->app->getSession()['login_status'] === 'access_granted';
 
         return $isAuth;
     }

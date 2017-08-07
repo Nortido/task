@@ -5,6 +5,7 @@
 namespace Task\App\Core;
 
 use PDO;
+use Task\TaskBase;
 
 class DB
 {
@@ -16,11 +17,11 @@ class DB
     /**
      * DB constructor.
      */
-    public function __construct() {
+    public function __construct(array $config) {
         $this->connection = new PDO(
             'mysql:host=mysql;dbname=taskdb',
             'root',
-            'JV4yLWsPlzQkCvMz3E5j'
+            $config['mysql_password']
         );
     }
 

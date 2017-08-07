@@ -15,6 +15,11 @@ require_once 'core/Route.php';
 
 $app = new TaskBase();
 $config = require_once('config.php');
-$app->setDb(new DB());
+$app->setDb(new DB($config));
 $app->setConfig($config);
+
+session_start();
+$app->setSession($_SESSION);
+session_write_close();
+
 Route::start($app);

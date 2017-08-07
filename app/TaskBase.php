@@ -19,6 +19,43 @@ class TaskBase
     private $config;
 
     /**
+     * @var array
+     */
+    private $session;
+
+    /**
+     * @return array
+     */
+    public function getSession() : array
+    {
+        return $this->session;
+    }
+
+    /**
+     * @param mixed $session
+     * @return TaskBase
+     */
+    public function setSession($session) : TaskBase
+    {
+        $this->session = $session;
+        return $this;
+    }
+
+    /**
+     * @param mixed $session
+     * @return TaskBase
+     */
+    public function setSessionVar($field, $value) : TaskBase
+    {
+        session_start();
+        $this->session[$field] = $value;
+        $_SESSION = $this->session;
+        session_write_close();
+
+        return $this;
+    }
+
+    /**
      * @return DB
      */
     public function getDb() : DB

@@ -12,7 +12,7 @@
 <?php endif; ?>
 <form action="/user/checkout/<?= $data->id ?>" method="post">
     Amount:<br>
-    <input type="number" name="amount" value="" required>
+    <input type="number" step="0.01" name="amount" value="" required>
     <br><br>
     <input type="submit" value="Proceed">
 </form>
