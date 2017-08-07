@@ -53,8 +53,8 @@ class ModelUser extends Model
 
     /**
      * @param PDO $conn
-     * @param $id
-     * @param $amount
+     * @param int $id
+     * @param float $amount
      * @return bool
      */
     private function _checkUserBalanceGreater(PDO $conn, $id, $amount) : bool
@@ -68,8 +68,9 @@ class ModelUser extends Model
 
     /**
      * @param PDO $conn
-     * @param $id
-     * @param $amount
+     * @param int $id
+     * @param float $amount
+     * @return bool
      */
     private function _updateUserBalance($conn, $id, $amount)
     {
