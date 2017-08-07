@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if ! docker ps -a --format={{.Names}} | grep mysql > /dev/null; then
-    docker run --name mysql -v /mnt/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=JV4yLWsPlzQkCvMz3E5j -d -p 3306:3306 mysql
+    docker run --name mysql -v /mnt/mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=php -r "echo (include('config.php'))['mysql_password'];" -d -p 3306:3306 mysql
 elif ! docker ps --format={{.Names}} | grep mysql > /dev/null; then
     docker start mysql > /dev/null;
     echo "mysql has been started"
