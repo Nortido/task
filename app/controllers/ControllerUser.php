@@ -112,7 +112,7 @@ class ControllerUser extends Controller
             header('Location:/');
         }
         /** @var float $amount */
-        $amount = floatval($_POST['amount']);
+        $amount = number_format((float)($_POST['amount']), 2);;
 
         if ($amount <= 0) {
             $errors[] = "Amount should be greater then zero";

@@ -21,7 +21,7 @@ class Controller
     /**
      * @return Model
      */
-    public function getModel(): Model
+    public function getModel()
     {
         return $this->model;
     }

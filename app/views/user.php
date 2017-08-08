@@ -3,7 +3,7 @@
 <body>
 
 <p>Username: <?= $user->getLogin(); ?></p>
-<p>Balance: <?= $user->getBalance(); ?></p>
+<p>Balance: <?= money_format('%.2n', $user->getBalance()); ?></p>
 
 <?php if ($errors) : ?>
     <ul>

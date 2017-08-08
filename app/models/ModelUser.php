@@ -149,7 +149,7 @@ class ModelUser extends Model
                 ':id' => $id
             ]);
 
-            if ($this->_checkUserBalanceGreater($conn, $id, $amount)) {
+            if (!$this->_checkUserBalanceToAmount($conn, $id, $amount)) {
                 $conn->rollBack();
 
                 return false;
@@ -169,13 +169,17 @@ class ModelUser extends Model
      * @param float $amount
      * @return bool
      */
-    private function _checkUserBalanceGreater(PDO $conn, int $id, float $amount): bool
+    private function _checkUserBalanceToAmount(PDO $conn, int $id, float $amount): bool
     {
-        $balanceObject = $conn->query("
-                SELECT balance FROM users WHERE id = ".$id." AND balance > ".$amount."
-            ")->rowCount();
+        $stmt = $conn->prepare("
+                SELECT balance FROM users WHERE id = :id
+            ");
+        $stmt->execute([
+            ':id' => $id
+        ]);
+        $balanceObject = $stmt->fetchObject();
 
-        return !$balanceObject;
+        return $balanceObject->balance >= $amount;
     }
 
     /**
