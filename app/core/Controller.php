@@ -21,7 +21,7 @@ class Controller
     /**
      * @return Model
      */
-    public function getModel()
+    public function getModel(): Model
     {
         return $this->model;
     }
@@ -58,11 +58,12 @@ class Controller
      * Controller constructor.
      * @param TaskBase $app
      */
-    public function __construct(TaskBase $app) {
+    public function __construct(TaskBase $app)
+    {
         $this->app = $app;
     }
 
-    function action_index()
+    function actionIndex()
     {
     }
 }

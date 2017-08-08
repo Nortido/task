@@ -22,7 +22,8 @@ class DB
     /**
      * DB constructor.
      */
-    public function __construct(TaskBase $app) {
+    public function __construct(TaskBase $app)
+    {
         $this->app = $app;
 
         $this->connection = new PDO(
@@ -37,7 +38,7 @@ class DB
      * @param string $table
      * @return array|bool
      */
-    public function get(int $id,string $table)
+    public function get(int $id, string $table)
     {
         return $this->findByField('id', $id, $table);
     }
@@ -48,12 +49,15 @@ class DB
      * @param string $table
      * @return array|bool
      */
-    public function findByField(string $field, $value,string $table)
+    public function findByField(string $field, $value, string $table)
     {
-        return $this->connection
-            ->query("SELECT * FROM ".$table." WHERE ".$field." = '".$value."'")
-            ->fetch(PDO::FETCH_ASSOC)
-        ;
+        $stmt = $this->connection
+            ->prepare("
+                SELECT * FROM {$table} WHERE {$field} = '{$value}'
+            ");
+        $stmt->execute();
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**

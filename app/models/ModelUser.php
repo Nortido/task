@@ -54,6 +54,7 @@ class ModelUser extends Model
     public function setLogin(string $login): ModelUser
     {
         $this->login = $login;
+
         return $this;
     }
 
@@ -72,6 +73,7 @@ class ModelUser extends Model
     public function setPasswordHash(string $password_hash): ModelUser
     {
         $this->password_hash = $password_hash;
+
         return $this;
     }
 
@@ -90,6 +92,7 @@ class ModelUser extends Model
     public function setBalance(float $balance): ModelUser
     {
         $this->balance = $balance;
+
         return $this;
     }
 
@@ -108,6 +111,7 @@ class ModelUser extends Model
     public function setToken(string $token): ModelUser
     {
         $this->token = $token;
+
         return $this;
     }
 

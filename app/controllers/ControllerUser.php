@@ -12,7 +12,8 @@ class ControllerUser extends Controller
      * ControllerUser constructor.
      * @param TaskBase $app
      */
-    public function __construct(TaskBase $app) {
+    public function __construct(TaskBase $app)
+    {
         $this->setModel(new ModelUser($app));
 
         parent::__construct($app);
@@ -28,6 +29,7 @@ class ControllerUser extends Controller
         }
         /** @var ModelUser $user */
         $user = $this->getModel()->get($id);
+
         if (!$user) {
             echo "<p>User doesn't exist</p>";
             exit;
@@ -53,30 +55,25 @@ class ControllerUser extends Controller
 
     function actionLogin()
     {
-        if(isset($_POST['login']) && isset($_POST['password']))
-        {
+        if(isset($_POST['login']) && isset($_POST['password'])) {
             /** @var string $login */
             $login = $_POST['login'];
             /** @var string $password */
             $password =$_POST['password'];
-            /** @var ModelUser $user */
-            $user = $this->getModel()->getByLogin($login);
+            /** @var ModelUser $userModel */
+            $userModel = $this->getModel();
+            $user = $userModel->getByLogin($login);
 
-            if (password_verify($password, $user->getPasswordHash()))
-            {
+            if (password_verify($password, $user->getPasswordHash())) {
                 $this->getApp()->setSessionVar("login_status","access_granted");
                 //It will be token generation and putting it into a database there
                 $this->getApp()->setSessionVar('token',$user->getToken());
                 $this->getApp()->setSessionVar('user_id', $user->getId());
                 header('Location:/user/view/'.$user->getId());
-            }
-            else
-            {
+            } else {
                 $this->getApp()->setSessionVar("login_status","access_denied");
             }
-        }
-        else
-        {
+        } else {
             if ( $this->getApp()->getSession()['token']
                 &&  $this->getApp()->getSession()["login_status"] == "access_granted") {
                 header('Location:/user/view/'. $this->getApp()->getSession()['user_id']);
@@ -111,14 +108,14 @@ class ControllerUser extends Controller
             header('Location:/');
         }
         /** @var float $amount */
-        $amount = number_format((float)($_POST['amount']), 2);;
+        $amount = round((float)($_POST['amount']), 2);
 
         if ($amount <= 0) {
             $errors[] = "Amount should be greater then zero";
         }
 
         if (!count($errors)) {
-            if (!$this->getModel()->checkout($id, $amount)) {
+            if (!$user->checkout($id, $amount)) {
                 $errors[] = "Operation is failed";
             }
         }
