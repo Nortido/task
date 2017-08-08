@@ -126,6 +126,9 @@ class ModelUser extends Model
                 echo $e->getMessage();
                 exit;
             }
+        } else {
+            echo "<p>User doesn't exist</p>";
+            exit;
         }
 
         return $this;

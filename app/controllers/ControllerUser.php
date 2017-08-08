@@ -59,7 +59,6 @@ class ControllerUser extends Controller
             $login = $_POST['login'];
             /** @var string $password */
             $password =$_POST['password'];
-
             /** @var ModelUser $user */
             $user = $this->getModel()->getByLogin($login);
 
