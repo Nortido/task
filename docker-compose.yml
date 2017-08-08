@@ -19,6 +19,8 @@ services:
             - code-network
     mysql:
         image: mysql:latest
+        ports:
+            - "3306:3306"
         volumes:
             - /mnt/mysql:/var/lib/mysql
         environment:
