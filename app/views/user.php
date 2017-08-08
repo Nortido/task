@@ -2,8 +2,8 @@
 <html>
 <body>
 
-<p>Username: <?= $user->login ?></p>
-<p>Balance: <?= $user->balance ?></p>
+<p>Username: <?= $user->getLogin(); ?></p>
+<p>Balance: <?= $user->getBalance(); ?></p>
 
 <?php if ($errors) : ?>
     <ul>
@@ -12,7 +12,7 @@
     <?php endforeach; ?>
     </ul>
 <?php endif; ?>
-<form action="/user/checkout/<?= $user->id ?>" method="post">
+<form action="/user/checkout/<?= $user->getId() ?>" method="post">
     Amount:<br>
     <input type="number" step="0.01" name="amount" value="0" required>
     <br><br>

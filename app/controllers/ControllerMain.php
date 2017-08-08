@@ -8,12 +8,13 @@ class ControllerMain extends Controller
 {
     function actionIndex()
     {
-        session_start();
-
-        if (isset($_SESSION['hash'])) {
-            header('Location:/user/login');
+        if ($this->getApp()->getSession()['user_id']
+            && $this->getApp()->getSession()['token']
+            && $this->getApp()->getSession()['access_granted']
+        ) {
+            include("app/views/login.php");
         }
 
-        include("app/views/login.php");
+        header('Location:/user/login');
     }
 }

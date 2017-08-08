@@ -3,6 +3,7 @@
  * @author Evgeny Novoselov <nortido@gmail.com>
  */
 use Task\App\Core\Controller;
+use Task\App\Core\Route;
 use Task\TaskBase;
 
 class ControllerUser extends Controller
@@ -12,7 +13,7 @@ class ControllerUser extends Controller
      * @param TaskBase $app
      */
     public function __construct(TaskBase $app) {
-        $this->model = new ModelUser($app);
+        $this->setModel(new ModelUser($app));
 
         parent::__construct($app);
     }
@@ -22,8 +23,11 @@ class ControllerUser extends Controller
      */
     function actionView($id)
     {
-        $user = $this->model->get($id);
-
+        if (!is_int($id)) {
+            Route::ErrorPage404();
+        }
+        /** @var ModelUser $user */
+        $user = $this->getModel()->get($id);
         if (!$user) {
             echo "<p>User doesn't exist</p>";
             exit;
@@ -34,10 +38,13 @@ class ControllerUser extends Controller
             exit;
         }
 
-        $errors = $this->app->getSession()['errors'];
-        $this->app->setSessionVar('errors', null);
+        /** @var array $errors */
+        $errors = $this->getApp()->getSession()['errors'];
+        $this->getApp()->setSessionVar('errors', "");
 
-        if ($user->password_hash ==  $this->app->getSession()['hash'] && !is_null($user->password_hash)) {
+        if ($user->getToken() ==  $this->getApp()->getSession()['token']
+            && !is_null($user->getPasswordHash())
+        ) {
             include("app/views/user.php");
         } else {
             header('Location:/user/login');
@@ -48,26 +55,32 @@ class ControllerUser extends Controller
     {
         if(isset($_POST['login']) && isset($_POST['password']))
         {
+            /** @var string $login */
             $login = $_POST['login'];
+            /** @var string $password */
             $password =$_POST['password'];
 
-            $user = $this->model->getByLogin($login);
-            if (password_verify($password, $user->password_hash))
+            /** @var ModelUser $user */
+            $user = $this->getModel()->getByLogin($login);
+
+            if (password_verify($password, $user->getPasswordHash()))
             {
-                $this->app->setSessionVar("login_status","access_granted");
-                $this->app->setSessionVar('hash',$user->password_hash);
-                $this->app->setSessionVar('user_id',$user->id);
-                header('Location:/user/view/'.$user->id);
+                $this->getApp()->setSessionVar("login_status","access_granted");
+                //It will be token generation and putting it into a database there
+                $this->getApp()->setSessionVar('token',$user->getToken());
+                $this->getApp()->setSessionVar('user_id', $user->getId());
+                header('Location:/user/view/'.$user->getId());
             }
             else
             {
-                $this->app->setSessionVar("login_status","access_denied");
+                $this->getApp()->setSessionVar("login_status","access_denied");
             }
         }
         else
         {
-            if ( $this->app->getSession()['hash'] &&  $this->app->getSession()["login_status"] == "access_granted") {
-                header('Location:/user/view/'. $this->app->getSession()['user_id']);
+            if ( $this->getApp()->getSession()['token']
+                &&  $this->getApp()->getSession()["login_status"] == "access_granted") {
+                header('Location:/user/view/'. $this->getApp()->getSession()['user_id']);
             }
         }
 
@@ -90,13 +103,15 @@ class ControllerUser extends Controller
      */
     function actionCheckout(int $id)
     {
+        /** @var array $errors */
         $errors = [];
-
-        $user = $this->model->get($id);
+        /** @var ModelUser $user */
+        $user = $this->getModel()->get($id);
 
         if (!$this->_checkAuth($user)) {
             header('Location:/');
         }
+        /** @var float $amount */
         $amount = floatval($_POST['amount']);
 
         if ($amount <= 0) {
@@ -104,24 +119,24 @@ class ControllerUser extends Controller
         }
 
         if (!count($errors)) {
-            if (!$this->model->checkout($id, $amount)) {
+            if (!$this->getModel()->checkout($id, $amount)) {
                 $errors[] = "Operation is failed";
             }
         }
 
-        $this->app->setSessionVar('errors', $errors);
+        $this->getApp()->setSessionVar('errors', $errors);
         header('Location:/user/view/'.$id);
     }
 
     /**
      * @param ModelUser $user
-     * @return bool $isAuth
+     * @return bool
      */
-    private function _checkAuth($user)
+    private function _checkAuth(ModelUser $user): bool
     {
-        $isAuth =  $this->app->getSession()['user_id'] === $user->id
-            &&  $this->app->getSession()['hash'] === $user->password_hash
-            &&  $this->app->getSession()['login_status'] === 'access_granted';
+        $isAuth =  $this->getApp()->getSession()['user_id'] === $user->getId()
+            &&  $this->getApp()->getSession()['token'] === $user->getToken()
+            &&  $this->getApp()->getSession()['login_status'] === 'access_granted';
 
         return $isAuth;
     }

@@ -15,20 +15,27 @@ class DB
     private $connection;
 
     /**
+     * @var TaskBase
+     */
+    private $app;
+
+    /**
      * DB constructor.
      */
-    public function __construct(array $config) {
+    public function __construct(TaskBase $app) {
+        $this->app = $app;
+
         $this->connection = new PDO(
             'mysql:host=mysql;dbname=taskdb',
             'root',
-            $config['mysql_password']
+            $this->app->getConfig()['mysql_password']
         );
     }
 
     /**
      * @param int $id
      * @param string $table
-     * @return mixed
+     * @return array|bool
      */
     public function get(int $id,string $table)
     {
@@ -37,22 +44,22 @@ class DB
 
     /**
      * @param string $field
-     * @param string|int $value
+     * @param mixed $value
      * @param string $table
-     * @return mixed
+     * @return array|bool
      */
     public function findByField(string $field, $value,string $table)
     {
         return $this->connection
             ->query("SELECT * FROM ".$table." WHERE ".$field." = '".$value."'")
-            ->fetchObject()
+            ->fetch(PDO::FETCH_ASSOC)
         ;
     }
 
     /**
      * @return PDO
      */
-    public function getConnection()
+    public function getConnection(): PDO
     {
         return $this->connection;
     }

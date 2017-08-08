@@ -32,20 +32,21 @@ class TaskBase
     }
 
     /**
-     * @param mixed $session
-     * @return TaskBase
+     * @param array $session
+     * @return $this
      */
-    public function setSession($session) : TaskBase
+    public function setSession(array $session) : TaskBase
     {
         $this->session = $session;
         return $this;
     }
 
     /**
-     * @param mixed $session
-     * @return TaskBase
+     * @param string $field
+     * @param mixed $value
+     * @return $this
      */
-    public function setSessionVar($field, $value) : TaskBase
+    public function setSessionVar(string $field, $value) : TaskBase
     {
         session_start();
         $this->session[$field] = $value;
@@ -65,7 +66,7 @@ class TaskBase
 
     /**
      * @param DB $db
-     * @return TaskBase
+     * @return $this
      */
     public function setDb(DB $db) : TaskBase
     {
@@ -83,7 +84,7 @@ class TaskBase
 
     /**
      * @param array $config
-     * @return TaskBase
+     * @return $this
      */
     public function setConfig(array $config) : TaskBase
     {
